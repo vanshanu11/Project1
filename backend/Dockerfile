@@ -1,11 +1,11 @@
-# Stage 1 - Build
-FROM node:18-alpine AS build
+# Stage 1: build
+FROM node:18-alpine as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 COPY . .
 
-# Stage 2 - Production
+# Stage 2: run
 FROM node:18-alpine
 WORKDIR /app
 COPY --from=build /app /app
