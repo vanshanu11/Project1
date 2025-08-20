@@ -1,0 +1,29 @@
+deploy:
+  stage: deploy
+  script:
+    - |
+      ssh $DEPLOY_USER@$DEPLOY_HOST << 'EOF'
+        set -e
+        cd $APP_DIR
+
+        echo "Creating backup of current docker-compose..."
+        docker-compose ps -q > .prev_containers || true
+        cp docker-compose.yml docker-compose.prev.yml || true
+
+        echo "Deploying new version..."
+        if docker-compose pull && docker-compose up --build -d; then
+          echo "✅ Deploy successful"
+        else
+          echo "❌ Deploy failed, rolling back..."
+          if [ -f docker-compose.prev.yml ]; then
+            mv docker-compose.prev.yml docker-compose.yml
+            docker-compose up -d
+          fi
+
+          # Optionally, remove failed containers
+          if [ -s .prev_containers ]; then
+            xargs docker rm -f < .prev_containers
+          fi
+          exit 1
+        fi
+      EOF

@@ -1,0 +1,23 @@
+Deployment Instructions (Ubuntu 20.04)
+Step 1: Install Docker & Docker Compose
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable docker
+sudo systemctl start docker
+
+Step 2: Add user to Docker group (optional)
+sudo usermod -aG docker $USER
+# Then reboot or re-login
+
+Step 3: Clone or Copy your app to server
+git clone <your-repo-url>
+cd project-root/
+
+Step 4: Build & Run
+docker-compose up --build -d
+
+Step 5: Test
+
+Access your app via http://<your-server-ip>/
+
+API should work via http://<your-server-ip>/api/
